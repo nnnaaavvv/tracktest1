@@ -86,17 +86,24 @@ def dataframe_to_dva(dataframe, car_mass, friction_u):
 ###############################################################################
 #Calculate Continuous Time
 @cache
-def find_continuous_time(dva_dataframe):
-    
-    sec = []
-    for index,row in dva_dataframe.iterrows(): # <- index is not being used which makes it waste memory but if remove index variable row is not created
-        first_row = dva_dataframe.iloc[[0]]
-        sec.append(row['Time (s)'] - first_row['Time (s)'])
-    df = pd.concat(sec).reset_index(drop=True)
-    dva_dataframe = pd.concat([dva_dataframe, df], axis=1)
-    # dva_dataframe = dva_dataframe.iloc[: , 1:]
-    dva_dataframe = dva_dataframe.set_axis([*dva_dataframe.columns[:-1], 'Continuous Time'], axis=1, inplace=False)
+def find_continuous_time(dva_dataframe: pd.DataFrame) -> pd.DataFrame:
+    """
+    Converts discrete time steps into continuous time.
+    Assumes the last column contains delta time values.
+    """
+
+    # Safety check
+    if dva_dataframe.empty:
+        raise ValueError("Input dataframe is empty")
+
+    # Assume last column is delta time
+    delta_time_col = dva_dataframe.columns[-1]
+
+    # Cumulative sum to get continuous time
+    dva_dataframe["Continuous Time"] = dva_dataframe[delta_time_col].cumsum()
+
     return dva_dataframe
+
 
 ###############################################################################
 #Acceleration (a)
