@@ -3,8 +3,7 @@ from os import name, read
 import numpy as np
 import pandas as pd
 import streamlit as st
-from streamlit.elements.arrow import Data
-from streamlit.type_util import data_frame_to_bytes
+
 
 import app_functions as appf
 import calculation_functions as cf
